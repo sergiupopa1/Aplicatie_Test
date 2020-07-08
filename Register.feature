@@ -14,9 +14,9 @@ Scenario: Log In
 
 Scenario: Check that Image Slider change the content
 	Given I am on the homepage
-	When I click on the Next button from Image Slider
+	When I click on the Previous button from Image Slider	
 	Then I see a different product
-	When I click on the Previous button from Image Slider
+	When I click on the Next button from Image Slider
 	Then I see a different product
 
 Scenario: Buy random phones using given budget

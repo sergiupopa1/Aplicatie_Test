@@ -20,10 +20,6 @@ namespace ConsoleApp1
 
         string initialImage; 
         
-        string actualImage;
-
-        Boolean displayed;
-
         private IWebDriver driver;
         
         [Given(@"I am on the homepage")]
@@ -104,42 +100,19 @@ namespace ConsoleApp1
 
         /***************************************** new scenario ****************************************/
 
-        public string SaveInitialImage()
+        public string SaveActiveElement()
         {
-            try
-            {
-                displayed = (driver.FindElement(By.XPath("//div[@class='carousel-item active']"))).Displayed;
+            var activeElement = driver.FindElement(By.XPath("//div[@class='carousel-item active']/img"));
 
-                var activeElement = driver.FindElement(By.XPath("//div[@class='carousel-item active']"));
-
-                activeElement.GetAttribute("src");
-
-                if (displayed == true)
-                    initialImage = "Third slide";
-                else
-                    displayed = (driver.FindElement(By.XPath("//*[@id=\"carouselExampleIndicators\"]/div/div[2]/img"))).Displayed;
-                if (displayed == true)
-                    initialImage = "Second slide";
-                else
-                    displayed = (driver.FindElement(By.XPath("//*[@id=\"carouselExampleIndicators\"]/div/div[1]/img"))).Displayed;
-                if (displayed == true)
-                    initialImage = "First slide";
-                else
-                    Console.WriteLine("Element is not displayed!");
-            }
-
-            catch (NoSuchElementException)
-            {
-                Console.WriteLine("Element not found!");
-            }
-            
+            initialImage = activeElement.GetAttribute("alt");
+    
             return initialImage;
         }
 
         [When(@"I click on the Previous button from Image Slider")]
         public void WhenIClickOnThePreviousButtonFromImageSlider()
         {
-            SaveInitialImage();
+            SaveActiveElement();
 
             driver.FindElement(By.CssSelector("#carouselExampleIndicators > a.carousel-control-prev > span.carousel-control-prev-icon")).Click();
 
@@ -150,35 +123,19 @@ namespace ConsoleApp1
         [Then(@"I see a different product")]
         public void ThenISeeADifferentProduct()
         {
-            try
-            {
-                displayed = (driver.FindElement(By.XPath("//*[@id=\"carouselExampleIndicators\"]/div/div[3]/img"))).Displayed;
-                if (displayed == true)
-                    actualImage = "Third slide";
-                else
-                    displayed = (driver.FindElement(By.XPath("//*[@id=\"carouselExampleIndicators\"]/div/div[2]/img"))).Displayed;
-                if (displayed == true)
-                    actualImage = "Second slide";
-                else
-                    displayed = (driver.FindElement(By.XPath("//*[@id=\"carouselExampleIndicators\"]/div/div[1]/img"))).Displayed;
-                if (displayed == true)
-                    actualImage = "First slide";
-                else
-                    Console.WriteLine("Element is not displayed!");
-            }
+            string actualImage;
 
-            catch (NoSuchElementException)
-            {
-                Console.WriteLine("Element not found!");
-            }
-            
-            Assert.AreNotEqual(initialImage, actualImage);
+            var activeElement = driver.FindElement(By.XPath("//div[@class='carousel-item active']/img"));
+
+            actualImage = activeElement.GetAttribute("alt");
+
+            Assert.AreNotEqual(actualImage, initialImage);
         }
 
         [When(@"I click on the Next button from Image Slider")]
         public void WhenIClickOnTheNextButtonFromImageSlider()
         {
-            SaveInitialImage();
+            SaveActiveElement();
 
             driver.FindElement(By.CssSelector("#carouselExampleIndicators > a.carousel-control-next > span.carousel-control-next-icon")).Click();
 
@@ -224,7 +181,7 @@ namespace ConsoleApp1
         [Then(@"I can add to cart (.*) random phones that don't exceed my budget")]
         public void ThenICanAddToCartRandomPhonesThatDonTExceedMyBudget(int p0)
         {
-            int j, phoneValue1, phoneValue2, totalCart;
+            int j, phoneValue1, phoneValue2, totalCart, Contor;
             
             string xPathSelectedPhone1, xPathSelectedPhone2;
 
@@ -232,7 +189,9 @@ namespace ConsoleApp1
 
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
 
-            j = rand.Next(7);
+            Contor = driver.FindElements(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")).Count;
+
+            j = rand.Next(Contor);
             if (j == 0)
                 j++;
 
@@ -245,7 +204,7 @@ namespace ConsoleApp1
 
             else
             {
-                j = rand.Next(7);
+                j = rand.Next(Contor);
                 if (j == 0)
                     j++;
 
@@ -256,7 +215,7 @@ namespace ConsoleApp1
 
             do
             {
-                j = rand.Next(7);
+                j = rand.Next(Contor);
                 if (j == 0)
                     j++;
 
@@ -286,13 +245,9 @@ namespace ConsoleApp1
 
             //driver.FindElement(By.Id("nava")).Click();
 
-            wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.Id("cartur"))).Click();
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("cartur"))).Click();
 
-            Thread.Sleep(2000);
-
-            wait.Until(ExpectedConditions.ElementToBeSelected(By.Id("totalp")));
-
-            //Thread.Sleep(2000);
+            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("totalp")));
 
             totalCart = int.Parse(driver.FindElement(By.Id("totalp")).Text);
 
@@ -300,7 +255,7 @@ namespace ConsoleApp1
 
             for (j=0;j<p0;j++)
             {
-                wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[contains(@onclick,'deleteItem')]")));
+                wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//a[contains(text(),'Delete')]")));
 
                 (driver.FindElement(By.XPath("//*[contains(@onclick,'deleteItem')]"))).Click();
 
@@ -317,21 +272,25 @@ namespace ConsoleApp1
         {
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
             
-            switch (p0)
-            {
-                case "\"Phones\"":
-                    (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'phone')]")))).Click();
-                    break;
-                case "\"Laptops\"":
-                    (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'notebook')]")))).Click();
-                    break;
-                case "\"Monitors\"":
-                    (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'monitor')]")))).Click();
-                    break;
-                default:
-                    Console.WriteLine("Error: No category found!");
-                    break;
-            }
+                switch (p0)
+                {
+                    case "Phones":
+                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'phone')]")))).Click();
+                        break;
+                    case "\"Phones\"":
+                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'phone')]")))).Click();
+                        break;
+                    case "\"Laptops\"":
+                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'notebook')]")))).Click();
+                        break;
+                    case "\"Monitors\"":
+                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'monitor')]")))).Click();
+                        break;
+                    default:
+                        Console.WriteLine("Error: No category found!");
+                        break;
+                }
+            
             Thread.Sleep(2000);
         }
 

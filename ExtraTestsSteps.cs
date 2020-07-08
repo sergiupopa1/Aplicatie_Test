@@ -23,8 +23,6 @@ namespace ConsoleApp1
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 15));
 
             wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("nava")));
-
-            Thread.Sleep(3000);
         }
 
         [When(@"I click Home button")]
@@ -54,23 +52,17 @@ namespace ConsoleApp1
         [Then(@"The cart page is displayed")]
         public void ThenTheCartPageIsDisplayed()
         {
-            //try
-            //{
-            //    IWebDriver total;
+            try
+            {
+                WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 15));
 
-            //    WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 15));
+                wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//button[@class='btn btn-success']")));
+            }
 
-            //    wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id=\"page - wrapper\"]/div/div[2]/button")));
-
-            //    //wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id=\"page - wrapper\"]/div/div[2]/button")))
-
-            //    //total = driver.FindElement(By.XPath("//*[@id=\"page - wrapper\"]/div/div[2]/button"));
-            //}
-
-            //catch(NoSuchElementException)
-            //{
-            //    Console.WriteLine("Element was not found!");
-            //}            
+            catch (NoSuchElementException)
+            {
+                Console.WriteLine("Element was not found!");
+            }
         }
 
         /******************************** new scenario *****************************/

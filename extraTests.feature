@@ -9,7 +9,7 @@ Scenario: Display Home page
 	Then the home page is displayed
 
 Scenario: Go to Cart page
-	Given I am on the homepage
+	Given I am on the home page
 	When I click Cart button
 	Then The cart page is displayed
 
@@ -29,9 +29,9 @@ Scenario: Go to Cart page
 #	Given I am on the homepage
 #	When I click on Laptops category
 #	And I search for a Dell from 2017
-#	When I click on Add to Cart button
-#	When  I click on Cart button
-#	When I place order
-#	When I fill the payment required data
-#	When I click on Purchase
+#	And I click on Add to Cart button
+#	And  I click on Cart button
+#	And I place order
+#	And I fill the payment required data
+#	And I click on Purchase
 #	Then I get the order confirmation
