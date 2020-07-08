@@ -243,8 +243,6 @@ namespace ConsoleApp1
 
             driver.SwitchTo().Alert().Accept();
 
-            //driver.FindElement(By.Id("nava")).Click();
-
             wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("cartur"))).Click();
 
             wait.Until(ExpectedConditions.ElementIsVisible(By.Id("totalp")));
