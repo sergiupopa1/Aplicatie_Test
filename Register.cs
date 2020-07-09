@@ -27,7 +27,10 @@ namespace ConsoleApp1
         {
             driver = new ChromeDriver();
 
-            driver.Navigate().GoToUrl("https://www.demoblaze.com");
+            //Modificare
+            driver.Manage().Window.Maximize();
+
+            driver.Navigate().GoToUrl("https://www.demoblaze.com"); // e indicat sa declari ca parametru URL-ul si apoi sa-l folosesti unde ai nevoie
 
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
 
@@ -47,7 +50,10 @@ namespace ConsoleApp1
         {
             WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
 
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("sign-username"))).SendKeys("xyz1234567890");
+            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("sign-username"))).SendKeys("xyz1234567890");// daca se foloseste acelasi username
+                                                                                                                                // testul automatizat nu are valoare pt ca la a 2 a rulare acesta da fail
+                                                                                                                                // pentru ca userul e unul deja existent
+                                                                                                                                // de modificat facand register cu un user nou la fiecare rulare. Foloseste generarea de user random
 
             driver.FindElement(By.Id("sign-password")).SendKeys("12345678");
 
@@ -59,7 +65,7 @@ namespace ConsoleApp1
         {
             Thread.Sleep(500);
 
-            driver.SwitchTo().Alert().Accept();
+            driver.SwitchTo().Alert().Accept(); // se poate adauga un pas de verificare la register in care sa verifici ca merge sa faci login cu user-ul nou inregistrat/creat
         }
 
         /***************************************** new scenario ****************************************/
@@ -129,7 +135,7 @@ namespace ConsoleApp1
 
             actualImage = activeElement.GetAttribute("alt");
 
-            Assert.AreNotEqual(actualImage, initialImage);
+            Assert.AreNotEqual(actualImage, initialImage);// verificarea se putea face luand sursa, imaginea incarcata ex: src="nexus1", "samsnug1"
         }
 
         [When(@"I click on the Next button from Image Slider")]
@@ -148,6 +154,11 @@ namespace ConsoleApp1
         public void GivenIAmLoggedIn()
         {
             driver = new ChromeDriver();
+
+
+            // Modificare
+            driver.Manage().Window.Maximize();
+
 
             driver.Navigate().GoToUrl("https://www.demoblaze.com");
 
@@ -179,7 +190,9 @@ namespace ConsoleApp1
         }
 
         [Then(@"I can add to cart (.*) random phones that don't exceed my budget")]
-        public void ThenICanAddToCartRandomPhonesThatDonTExceedMyBudget(int p0)
+        public void ThenICanAddToCartRandomPhonesThatDonTExceedMyBudget(int p0)  // Incearca sa spargi in metode codul din acest Step
+                                                                                 // hint: poti lua toate telefoanele si preturile lor intr-o lista de elemente
+                                                                                 // vezi foreach pentru C#, care te poate ajuta sa simplifici codul
         {
             int j, phoneValue1, phoneValue2, totalCart, Contor;
             
@@ -295,7 +308,7 @@ namespace ConsoleApp1
         [Then(@"I can see in the test output the mean value of each product")]
         public void ThenICanSeeInTheTestOutputTheMeanValueOfEachProduct()
         {
-            int noOfProducts, i;
+            int noOfProducts, i; // e indicat sa se foloseasca declarari separate pentru variabile, e mai usor de citit, urmarit
             
             noOfProducts = driver.FindElements(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")).Count;
 
@@ -304,7 +317,7 @@ namespace ConsoleApp1
                 meanValue += int.Parse(Regex.Match((driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + i + "]/div/div/h5"))).Text, @"\d+").Value);
             }
 
-            Console.WriteLine(meanValue / noOfProducts);
+            Console.WriteLine(meanValue / noOfProducts);//nu apare valoarea in output, foloseste Debug.WriteLine();
         }
 
         [AfterScenario]
