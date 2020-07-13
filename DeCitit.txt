@@ -1,0 +1,18 @@
+﻿
+
+	Testele care nu trec, sunt pe fail dupa mai multe rulari:
+	 - Scenario: 1.Display Home page
+	 - Scenario: 2.Go to Cart page
+	 - Scenario: Buy random phones using given budget
+	 - Scenario: Log In
+	 - Scenario: Register new user
+
+	 Motivul pentru care aceste teste nu trec este ca sesiunea de Chrome deschisa nu este in maximize/full screen, iar pagina nu are resposive, iar anumite elemente
+	 nu sunt accesibile in mod corespunzator. Variante de corectat ar fi: sesiunea de chrome sa fie maximizata dupa deschidere sau fortat click-ul pe elemente.
+
+
+	 Ce poate fi modificat/imbunatatit:
+	  - Studierea Pattern-ului Page Object Model si apoi implementarea lui pentru codul existent(Identificarea elementelor, metode specifice unor teste, pagini anume, declarate separat de Steps)
+
+
+	 Astept si restul de scenarii ce nu au fost implementate. :)
