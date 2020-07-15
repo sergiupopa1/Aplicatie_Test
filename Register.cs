@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using ConsoleApp1.Pages;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
@@ -8,185 +9,146 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading;
 using TechTalk.SpecFlow;
+using TestProject.SDK;
+using TestProject.SDK.Tests;
+using TestProject.SDK.Tests.Helpers;
+using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace ConsoleApp1
 {
     [Binding, Scope(Feature = "Register")]
     public class Register
     {
-        private int budget;
+        private HomePage homePage;
 
-        int meanValue;
+        private IWebDriver driver = new ChromeDriver();
+      
+        private string _URL = "https://www.demoblaze.com/";
 
-        string initialImage; 
-        
-        private IWebDriver driver;
-        
+        private string _randomUserName = Guid.NewGuid().ToString();
+
+        private string _standardUser = "xyz1234567890";
+
+        private string _standardPassword = "12345678";
+
+        private string _initialImage;
+
+        private int _meanValue;
+
+        private int _budget;
+
+        public Register()
+        {
+            homePage = new HomePage(driver);
+
+            driver.Manage().Window.Maximize();
+        }
+
+        /***************************************** Register new user ****************************************/
+
         [Given(@"I am on the homepage")]
         public void GivenIAmOnTheHomepage()
         {
-            driver = new ChromeDriver();
+            homePage.NavigateToUrl(_URL);
 
-            //Modificare
-            driver.Manage().Window.Maximize();
-
-            driver.Navigate().GoToUrl("https://www.demoblaze.com"); // e indicat sa declari ca parametru URL-ul si apoi sa-l folosesti unde ai nevoie
-
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("nava")));
+            homePage.CheckHomePageIsDisplayed();
         }
         
         [Given(@"I click on Sign Up button")]
         public void GivenIClickOnSignUpButton()
         {
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("signin2"))).Click();
+            homePage.ClickSignUp();
         }
         
         [When(@"I fill in required data")]
         public void WhenIFillInRequiredData()
         {
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("sign-username"))).SendKeys("xyz1234567890");// daca se foloseste acelasi username
-                                                                                                                                // testul automatizat nu are valoare pt ca la a 2 a rulare acesta da fail
-                                                                                                                                // pentru ca userul e unul deja existent
-                                                                                                                                // de modificat facand register cu un user nou la fiecare rulare. Foloseste generarea de user random
-
-            driver.FindElement(By.Id("sign-password")).SendKeys("12345678");
-
-            driver.FindElement(By.CssSelector("#signInModal > div > div > div.modal-footer > button.btn.btn-primary")).Click();
+            homePage.PerformSignUp(_randomUserName, _standardPassword);
         }
         
         [Then(@"I get registered")]
         public void ThenIGetRegistered()
         {
-            Thread.Sleep(500);
+            homePage.RegisterConfirmation();
 
-            driver.SwitchTo().Alert().Accept(); // se poate adauga un pas de verificare la register in care sa verifici ca merge sa faci login cu user-ul nou inregistrat/creat
+            homePage.ClickLogIn();
+
+            homePage.PerformLogIn(_randomUserName, _standardPassword);
         }
 
-        /***************************************** new scenario ****************************************/
+        /***************************************** Log In ****************************************/
 
         [When(@"I click on the login button")]
         public void WhenIClickOnTheLoginButton()
         {
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("login2"))).Click();
+            homePage.ClickLogIn();
         }
 
         [When(@"I enter my credentials")]
         public void WhenIEnterMyCredentials()
         {
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("loginusername"))).SendKeys("xyz1234567890");
-
-            driver.FindElement(By.Id("loginpassword")).SendKeys("12345678");
-
-            driver.FindElement(By.CssSelector("#logInModal > div > div > div.modal-footer > button.btn.btn-primary")).Click();
+            homePage.PerformLogIn(_standardUser, _standardPassword);
         }
 
         [Then(@"I get logged in")]
         public void ThenIGetLoggedIn()
         {
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("nameofuser")));
-
-            string logInText;
-
-            logInText = driver.FindElement(By.Id("nameofuser")).Text;
-
-            Assert.AreEqual(logInText, "Welcome xyz1234567890");
+            homePage.LogInConfirmation();
         }
 
-        /***************************************** new scenario ****************************************/
+        /***************************************** Check that Image Slider change the content *****************************************/
 
-        public string SaveActiveElement()
+        public string GetImageDisplayedInSlider()
         {
-            var activeElement = driver.FindElement(By.XPath("//div[@class='carousel-item active']/img"));
-
-            initialImage = activeElement.GetAttribute("alt");
+            _initialImage = homePage.GetActualImageFromSlider();
     
-            return initialImage;
+            return _initialImage;
         }
 
         [When(@"I click on the Previous button from Image Slider")]
         public void WhenIClickOnThePreviousButtonFromImageSlider()
         {
-            SaveActiveElement();
+            GetImageDisplayedInSlider();
 
-            driver.FindElement(By.CssSelector("#carouselExampleIndicators > a.carousel-control-prev > span.carousel-control-prev-icon")).Click();
+            homePage.ClickPreviousButton();
 
             Thread.Sleep(1000);
-
         }
 
         [Then(@"I see a different product")]
         public void ThenISeeADifferentProduct()
-        {
-            string actualImage;
+        {            
+            var actualImage = homePage.GetActualImageFromSlider();
 
-            var activeElement = driver.FindElement(By.XPath("//div[@class='carousel-item active']/img"));
-
-            actualImage = activeElement.GetAttribute("alt");
-
-            Assert.AreNotEqual(actualImage, initialImage);// verificarea se putea face luand sursa, imaginea incarcata ex: src="nexus1", "samsnug1"
+            Assert.AreNotEqual(actualImage, _initialImage);// verificarea se putea face luand sursa, imaginea incarcata ex: src="nexus1", "samsnug1" - done!
         }
 
         [When(@"I click on the Next button from Image Slider")]
         public void WhenIClickOnTheNextButtonFromImageSlider()
         {
-            SaveActiveElement();
+            GetImageDisplayedInSlider();
 
-            driver.FindElement(By.CssSelector("#carouselExampleIndicators > a.carousel-control-next > span.carousel-control-next-icon")).Click();
+            homePage.ClickNextButton();
 
             Thread.Sleep(1000);
         }
 
-        /***************************************** new scenario ****************************************/
+        /***************************************** Buy random phones using given budget ****************************************/
 
         [Given(@"I am logged in")]
         public void GivenIAmLoggedIn()
         {
-            driver = new ChromeDriver();
+            homePage.NavigateToUrl(_URL);
 
+            homePage.ClickLogIn();
 
-            // Modificare
-            driver.Manage().Window.Maximize();
-
-
-            driver.Navigate().GoToUrl("https://www.demoblaze.com");
-
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("nava")));
-                        
-            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("login2"))).Click();
-
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("loginusername"))).SendKeys("xyz1234567890");
-
-            driver.FindElement(By.Id("loginpassword")).SendKeys("12345678");
-
-            driver.FindElement(By.CssSelector("#logInModal > div > div > div.modal-footer > button.btn.btn-primary")).Click();
-
-            wait.Until(ExpectedConditions.ElementIsVisible(By.Id("nameofuser")));
-
-            string logInText;
-
-            logInText = driver.FindElement(By.Id("nameofuser")).Text;
-
-            Assert.AreEqual(logInText, "Welcome xyz1234567890");
+            homePage.PerformLogIn(_standardUser, _standardPassword);
         }
 
         [Given(@"I have a budget of (.*)\$")]
         public void GivenIHaveABudgetOf(int p0)
         {
-            budget = p0;
+            _budget = p0;
         }
 
         [Then(@"I can add to cart (.*) random phones that don't exceed my budget")]
@@ -210,7 +172,7 @@ namespace ConsoleApp1
 
             phoneValue1 = int.Parse(Regex.Match((driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + j + "]/div/div/h5"))).Text, @"\d+").Value);
 
-            if (budget - phoneValue1 > 0)
+            if (_budget - phoneValue1 > 0)
             {
                 xPathSelectedPhone1 = "//*[@id=\"tbodyid\"]/div[" + j + "]/div/div/h4/a";
             }
@@ -234,7 +196,7 @@ namespace ConsoleApp1
 
                 phoneValue2 = int.Parse(Regex.Match((driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + j + "]/div/div/h5"))).Text, @"\d+").Value);
 
-            } while (phoneValue1 + phoneValue2 > budget);
+            } while (phoneValue1 + phoneValue2 > _budget);
 
             xPathSelectedPhone2 = "//*[@id=\"tbodyid\"]/div[" + j + "]/div/div/h4/a";
 
@@ -262,7 +224,7 @@ namespace ConsoleApp1
 
             totalCart = int.Parse(driver.FindElement(By.Id("totalp")).Text);
 
-            Assert.LessOrEqual(totalCart, budget);
+            Assert.LessOrEqual(totalCart, _budget);
 
             for (j=0;j<p0;j++)
             {
@@ -276,48 +238,46 @@ namespace ConsoleApp1
             Thread.Sleep(2000);
         }
 
-        /***************************************** new scenario ****************************************/
+        /***************************************** Get mean value product cost ****************************************/
 
         [When(@"I filter by (.*)")]
         public void WhenIFilterBy(string p0)
         {
-            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(0, 0, 30));
-            
                 switch (p0)
                 {
                     case "Phones":
-                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'phone')]")))).Click();
+                        homePage.ClickPhoneCategory();
                         break;
                     case "\"Phones\"":
-                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'phone')]")))).Click();
+                        homePage.ClickPhoneCategory();
                         break;
                     case "\"Laptops\"":
-                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'notebook')]")))).Click();
+                        homePage.ClickLaptopCategory();
                         break;
                     case "\"Monitors\"":
-                        (wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'monitor')]")))).Click();
+                        homePage.ClickMonitorCategory();
                         break;
                     default:
                         Console.WriteLine("Error: No category found!");
                         break;
                 }
-            
-            Thread.Sleep(2000);
         }
 
         [Then(@"I can see in the test output the mean value of each product")]
         public void ThenICanSeeInTheTestOutputTheMeanValueOfEachProduct()
         {
-            int noOfProducts, i; // e indicat sa se foloseasca declarari separate pentru variabile, e mai usor de citit, urmarit
-            
-            noOfProducts = driver.FindElements(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")).Count;
+            int noOfProducts;
+            int i; // e indicat sa se foloseasca declarari separate pentru variabile, e mai usor de citit, urmarit - Done!
 
-            for(i=1;i<=noOfProducts;i++)
+            noOfProducts = homePage.CountNoOfProducts();
+
+            for (i=1;i<=noOfProducts;i++)
             {
-                meanValue += int.Parse(Regex.Match((driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + i + "]/div/div/h5"))).Text, @"\d+").Value);
+                _meanValue += int.Parse(Regex.Match((driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + i + "]/div/div/h5"))).Text, @"\d+").Value);
             }
-
-            Console.WriteLine(meanValue / noOfProducts);//nu apare valoarea in output, foloseste Debug.WriteLine();
+            
+            //nu apare valoarea in output, foloseste Debug.WriteLine() - Done!
+            Debug.WriteLine(_meanValue / noOfProducts);
         }
 
         [AfterScenario]

@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetSeleniumExtras.WaitHelpers" Version="3.11.0" />
+    <PackageReference Include="JustMock" Version="2020.2.616.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <PackageReference Include="Selenium.WebDriver" Version="3.141.0" />
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="83.0.4103.3910" />
@@ -14,6 +15,7 @@
     <PackageReference Include="SpecFlow.NUnit" Version="3.3.30" />
     <PackageReference Include="SpecFlow.NUnit.Runners" Version="3.3.30" />
     <PackageReference Include="SpecFlow.Tools.MsBuild.Generation" Version="3.3.30" />
+    <PackageReference Include="TestProject.SDK" Version="0.63.1" />
   </ItemGroup>
 
 </Project>
