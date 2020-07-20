@@ -283,7 +283,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Given("I am on the homepage", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 30
- testRunner.When(string.Format("I filter by \"{0}\"", product), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I filter by {0}", product), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 31
  testRunner.Then("I can see in the test output the mean value of each product", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");

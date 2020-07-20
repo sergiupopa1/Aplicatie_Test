@@ -1,7 +1,4 @@
 ﻿Feature: extraTests
-	In order to avoid silly mistakes
-	As a math idiot
-	I want to be told the sum of two numbers
 
 Scenario: 1.Display Home page
 	Given I am on the home page
@@ -10,28 +7,55 @@ Scenario: 1.Display Home page
 
 Scenario: 2.Go to Cart page
 	Given I am on the home page
-	When I click Cart button
+	When I go to cart
 	Then The cart page is displayed
 
 Scenario: 3.Select first product
 	Given I am on the home page
-	When I click on the first product
+	When I select the first product
 	Then display product's price
 
-Scenario: 4.Select first product
+Scenario: 4.Select first product and check cart
 	Given I am on the home page
-	When I click on the first product
-	When I click on Add to Cart button
-	When  I click on Cart button
+	When I select the first product
+	Then I add product to cart
+	When I go to cart
 	Then The selected product is displayed with the correct price
 
-#Scenario: 6. Buy a Dell from 2017
-#	Given I am on the homepage
-#	When I click on Laptops category
-#	And I search for a Dell from 2017
-#	And I click on Add to Cart button
-#	And  I click on Cart button
-#	And I place order
-#	And I fill the payment required data
-#	And I click on Purchase
-#	Then I get the order confirmation
+Scenario: 5.Check all pages from the header
+	Given I am on the home page
+	When I click on <Page>
+	Then I can see the correct <Page>
+
+	Examples: 
+	| Page     |
+	| Home     |
+	| Contact  |
+	| About us |
+	| Cart     |
+	| Log in   |
+	| Sign up  |
+
+Scenario: 6. Buy a Dell from 2017
+	Given I am on the home page
+	When I filter by Laptops
+	When I search for 2017 Dell
+	Then I add product to cart
+	When I place the order	
+	Then I get the order confirmation
+
+Scenario: 7. Buy an Apple monitor
+	Given I am on the home page
+	When I filter by Monitors
+	And I search for Apple monitor
+	Then I add product to cart
+	When I place the order	
+	Then I get the order confirmation
+	Then The cart is empty
+
+Scenario: 8. Buy products within budget
+	Given I am on the home page
+	And I have a budget of 1500$
+	And I select a phone, a laptop and a monitor within budget
+	When I place the order	
+	Then I get the order confirmation

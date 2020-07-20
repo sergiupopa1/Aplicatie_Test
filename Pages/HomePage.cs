@@ -4,9 +4,11 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Telerik.JustMock.Helpers;
 using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace ConsoleApp1.Pages
@@ -14,49 +16,84 @@ namespace ConsoleApp1.Pages
 
     class HomePage
     {
-        private IWebDriver _driver;
+        private readonly IWebDriver _driver;
 
-        private WebDriverWait wait;
+        private readonly WebDriverWait _wait;
+
+        private readonly CartPage _cartPage;
 
         public HomePage(IWebDriver driver)
         {
             _driver = driver;
 
-            wait = new WebDriverWait(_driver, new TimeSpan(0, 0, 30));
+            _wait = new WebDriverWait(_driver, new TimeSpan(0, 0, 30));
+
+            _cartPage = new CartPage(_driver);
         }
 
-        private IWebElement _logo => wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("nava")));
-        private IWebElement _signUpMenu => wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("signin2")));
-        private IWebElement _signInUsername => wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("sign-username")));
-        private IWebElement _signInPassword => wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("sign-password")));
-        private IWebElement _signUpButton => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//button[contains(text(),'Sign up')]")));
-        private IWebElement _logInMenu => wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("login2")));
-        private IWebElement _logInUserName => wait.Until(ExpectedConditions.ElementIsVisible(By.Id("loginusername")));
-        private IWebElement _logInPassword => wait.Until(ExpectedConditions.ElementIsVisible(By.Id("loginpassword")));
-        private IWebElement _logInButton => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//button[contains(text(),'Log in')]")));
-        private IWebElement _welcome => wait.Until(ExpectedConditions.ElementIsVisible(By.Id("nameofuser")));
-        private IWebElement _imageSliderNextBtn => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='carousel-control-next-icon']")));
-        private IWebElement _imageSliderPreviousBtn => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='carousel-control-prev-icon']")));
-        private IWebElement _imageSlider => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='carousel-item active']/img")));
-        private IWebElement _phoneCategory => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'Phones')]")));
-        private IWebElement _laptopCategory => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'Laptops')]")));
-        private IWebElement _monitorCategory => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'Monitors')]")));
-        private IWebElement _addToCart => wait.Until(ExpectedConditions.ElementToBeClickable(By.LinkText("Add to cart")));
-        private IWebElement _homeMenu => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'Home')]")));
-        private IWebElement _cartMenu => wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("cartur")));
-        private IWebElement _firstProduct => wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id=\"tbodyid\"]/div[1]/div/a/img")));
-        private IWebElement _productPrice => wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//h3[@class='price-container']")));
-        private IWebElement _productsFromHomePage => wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")));
+        private IWebElement _contactPageIdentification => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("recipient-email")));
+        private IWebElement _aboutUsPageIdentification => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("videoModalLabel")));
+        private IWebElement _category => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("cat")));
+        private IWebElement _homeMenu => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'Home')]")));
+        private IWebElement _contactMenu => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'Contact')]")));
+        private IWebElement _aboutUsMenu => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//a[contains(text(),'About us')]")));
+        private IWebElement _cartMenu => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("cartur")));
+        private IWebElement _logInMenu => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("login2")));
+        private IWebElement _signUpMenu => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("signin2")));
+        private IWebElement _signInUsername => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("sign-username")));
+        private IWebElement _signInPassword => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("sign-password")));
+        private IWebElement _signUpButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//button[contains(text(),'Sign up')]")));
+        private IWebElement _logInUserName => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("loginusername")));
+        private IWebElement _logInPassword => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("loginpassword")));
+        private IWebElement _logInButton => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//button[contains(text(),'Log in')]")));
+        private IWebElement _welcome => _wait.Until(ExpectedConditions.ElementIsVisible(By.Id("nameofuser")));
+        private IWebElement _imageSliderNextBtn => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='carousel-control-next-icon']")));
+        private IWebElement _imageSliderPreviousBtn => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//span[@class='carousel-control-prev-icon']")));
+        private IWebElement _imageSlider => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//div[@class='carousel-item active']/img")));
+        private IWebElement _phoneCategory => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'phone')]")));
+        private IWebElement _laptopCategory => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'notebook')]")));
+        private IWebElement _monitorCategory => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(@onclick,'monitor')]")));
+        private IWebElement _addToCart => _wait.Until(ExpectedConditions.ElementToBeClickable(By.LinkText("Add to cart")));
+        private IWebElement _firstProduct => _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[@id=\"tbodyid\"]/div[1]/div/a/img")));
+        private IWebElement _productPrice => _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//h3[@class='price-container']")));
 
-        public int CountNoOfProducts()
+        public void CheckContactPageIsDisplayed()
         {
-            var waitForElements = _productsFromHomePage.Displayed;
-
-            var noOfProducts = _driver.FindElements(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")).Count; ;
-
-            return noOfProducts;
+            Assert.IsTrue(_contactPageIdentification.Displayed);
         }
+        public void CheckAboutUsPageIsDisplayed()
+        {
+            Assert.AreEqual(_aboutUsPageIdentification.Text, "About us");
+        }
+        public void CheckLogInPageIsDisplayed()
+        {
+            Assert.IsTrue(_logInUserName.Displayed);
+        }
+        public void CheckSignUpPageIsDisplayed()
+        {
+            Assert.IsTrue(_signInUsername.Displayed);
+        }
+        public void ClickAboutUs()
+        {
+            _aboutUsMenu.Click();
+        }
+        public void ClickContact()
+        {
+            _contactMenu.Click();
+        }
+        public void WaitForElementContainText(string elementContainText)
+        {
+            _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//*[contains(text(),'" + elementContainText + "')]")));
+        }
+        public void WaitForProducts()
+        {
+            var counter = CountNoOfProducts();
 
+            for(var i = 1; i <= counter; i++)
+            {
+                _wait.Until(ExpectedConditions.ElementToBeClickable(By.XPath("//body/div/div/div/div/div["+ i +"]")));
+            }
+        }
         public string GetProductPrice()
         {
             var productPrice = _productPrice.Text;
@@ -113,7 +150,7 @@ namespace ConsoleApp1.Pages
         }
         public void CheckHomePageIsDisplayed()
         {
-            Assert.IsTrue(_logo.Displayed);
+            Assert.IsTrue(_category.Displayed);
         }
         public string PerformSignUp(string userName, string password)
         {
@@ -127,7 +164,7 @@ namespace ConsoleApp1.Pages
         }
         public bool RegisterConfirmation()
         {
-            wait.Until(ExpectedConditions.AlertIsPresent());
+            _wait.Until(ExpectedConditions.AlertIsPresent());
 
             var alertText = _driver.SwitchTo().Alert().Text;
 
@@ -149,9 +186,22 @@ namespace ConsoleApp1.Pages
         {
             Assert.IsTrue(_welcome.Displayed);
         }
+        public void SelectProductByName(string nameOfProduct)
+        {
+            try
+            {
+                (_wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//a[contains(text(),'" + nameOfProduct + "')]")))).Click();
+            }
+            catch
+            {
+                _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("next2")));
+
+                (_wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//a[contains(text(),'" + nameOfProduct + "')]")))).Click();
+            }
+        }
         public bool ProductAddedToCart()
         {
-            wait.Until(ExpectedConditions.AlertIsPresent());
+            _wait.Until(ExpectedConditions.AlertIsPresent());
 
             var alertText = _driver.SwitchTo().Alert().Text;
             
@@ -169,7 +219,7 @@ namespace ConsoleApp1.Pages
         }
         public string GetProductNameFromHomePage(int productPositionFromPage)
         {
-            IWebElement Name = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@class='col-lg-9']//div[" + productPositionFromPage + "]//div[1]//div[1]//h4[1]//a")));
+            IWebElement Name = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@class='col-lg-9']//div[" + productPositionFromPage + "]//div[1]//div[1]//h4[1]//a")));
             
             var productName = Name.Text;
 
@@ -177,11 +227,109 @@ namespace ConsoleApp1.Pages
         }
         public int GetProductPriceFromHomePage(int productPositionFromPage)
         {
-            IWebElement Price = wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@class='col-lg-9']//div[" + productPositionFromPage + "]//div[1]//div[1]//h5[1]")));
+            IWebElement Price = _wait.Until(ExpectedConditions.ElementIsVisible(By.XPath("//div[@class='col-lg-9']//div[" + productPositionFromPage + "]//div[1]//div[1]//h5[1]")));
 
             var productPrice = int.Parse(Regex.Match(Price.Text, @"\d+").Value);
             
             return productPrice;
+        }
+        public int CountNoOfProducts()
+        {
+            _wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")));
+
+            var noOfProducts = _driver.FindElements(By.XPath("//*[contains(@class, 'col-lg-4 col-md-6 mb-4')]")).Count;
+
+            return noOfProducts;
+        }
+        public int GetTheMeanValueOfProduct()
+        {
+            var totalValue = 0;
+
+            var noOfProducts = CountNoOfProducts();
+
+            for (var i = 1; i <= noOfProducts; i++)
+            {
+                totalValue += int.Parse(Regex.Match((_driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + i + "]/div/div/h5"))).Text, @"\d+").Value);
+            }
+
+            var meanValue = totalValue / noOfProducts;
+
+            return meanValue;
+        }        
+        public void AddToCartNoOfPhonesWithinBudget(int noOfPhones, int budget)
+        {
+            Random rand = new Random();
+
+            ClickPhoneCategory();
+
+            Thread.Sleep(500);
+
+            var counter = CountNoOfProducts();
+
+            int[] allPhonesPrice = new int[counter];
+
+            string[] allPhonesName = new string[counter];
+
+            string[] phoneNamesToAddToCart = new string[noOfPhones];
+
+            int[] phonePricesToAddToCart = new int[noOfPhones];
+
+            //save all products with name and price in array
+            for (var i = 1; i <= counter; i++)
+            {
+                allPhonesName[i-1] = _driver.FindElement(By.XPath("//div[@id='tbodyid']//div[" + i + "]//div[1]//div[1]//h4[1]//a[1]")).Text;
+
+                allPhonesPrice[i-1] = int.Parse(Regex.Match((_driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + i + "]/div/div/h5"))).Text, @"\d+").Value);
+            }
+
+            //
+            for (var i = 0; i < counter; i++)
+            {
+                var sum = 0;
+
+                //get random products from array
+                for (var j = 0; j < noOfPhones; j++)
+                {
+                    var random = rand.Next(counter);
+                    phonePricesToAddToCart[j] = allPhonesPrice[random];
+                    phoneNamesToAddToCart[j] = allPhonesName[random];
+                }
+                //get products total value
+                for (var k = 0; k < noOfPhones; k++)
+                {
+                    sum += phonePricesToAddToCart[k];
+                }
+                //check if products total value is within budget
+                if (sum <= budget)
+                    break;
+            }
+            //add selected products to cart
+            for(var i = 0; i < noOfPhones; i++)
+            {
+                SelectProductByName(phoneNamesToAddToCart[i]);
+
+                ClickAddToCart();
+
+                ProductAddedToCart();
+
+                ClickHome();
+            }
+
+            Thread.Sleep(1000);
+
+            ClickCart();
+
+            _cartPage.CheckCartPageIsDisplayed();
+
+            try
+            {
+                Assert.GreaterOrEqual(budget, _cartPage.GetTotalPriceFromCart());
+            }
+            catch (AssertionException)
+            {
+                _cartPage.ClearCart();
+                throw;
+            }
         }
     }
 }

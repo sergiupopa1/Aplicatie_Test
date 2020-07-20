@@ -16,13 +16,27 @@ namespace ConsoleApp1
     [Binding, Scope(Feature = "extraTests")]
     public class ExtraTestsSteps
     {
-        private HomePage homePage;
+        private readonly HomePage _homePage;
 
-        private CartPage cartPage;
+        private readonly CartPage _cartPage;
 
-        private IWebDriver driver = new ChromeDriver();
+        private readonly IWebDriver _driver = new ChromeDriver();
 
-        private string _URL = "https://www.demoblaze.com/";
+        private const string Url = "https://www.demoblaze.com/";
+
+        private const string OrderName = "John";
+
+        private const string OrderCountry = "United States";
+
+        private const string OrderCity = "New York";
+
+        private const string OrderCard = "4000 5000 6000 7000";
+
+        private const string OrderMonth = "April";
+
+        private const string OrderYear = "2020";
+
+        private int _budget;
 
         private string _productNameFromHomePage;
 
@@ -30,11 +44,11 @@ namespace ConsoleApp1
 
         public ExtraTestsSteps()
         {
-            homePage = new HomePage(driver);
+            _homePage = new HomePage(_driver);
 
-            cartPage = new CartPage(driver);
+            _cartPage = new CartPage(_driver);
 
-            driver.Manage().Window.Maximize();
+            _driver.Manage().Window.Maximize();
         }
 
         /******************************** Display Home Page *****************************/
@@ -42,89 +56,211 @@ namespace ConsoleApp1
         [Given(@"I am on the home page")]
         public void GivenIAmOnTheHomePage()
         {
-            homePage.NavigateToUrl(_URL);
+            _homePage.NavigateToUrl(Url);
 
-            homePage.CheckHomePageIsDisplayed();
+            _homePage.CheckHomePageIsDisplayed();
         }
 
         [When(@"I click Home button")]
         public void GivenIClickHomeButton()
         {
-            homePage.ClickHome();                                                                         
+            _homePage.ClickHome();                                                                         
         }
 
         [Then(@"the home page is displayed")]
         public void ThenTheHomePageIsDisplayed()
         {
-            homePage.CheckHomePageIsDisplayed();
+            _homePage.CheckHomePageIsDisplayed();
         }
 
         /******************************** Go to Cart Page *****************************/
 
-        [When(@"I click Cart button")]
-        public void WhenIClickCartButton()
+        [When(@"I go to cart")]
+        public void WhenIGoToCart()
         {
-            homePage.ClickCart();
+            _homePage.ClickCart();
         }
 
         [Then(@"The cart page is displayed")]
         public void ThenTheCartPageIsDisplayed()
         {
-            cartPage.CheckCartPageIsDisplayed();
+            _cartPage.CheckCartPageIsDisplayed();
         }
 
         /******************************** Select first product *****************************/
 
-        [When(@"I click on the first product")]
-        public void WhenIClickOnTheFirstProduct()
+        [When(@"I select the first product")]
+        public void WhenISelectTheFirstProduct()
         {
-            _productNameFromHomePage = homePage.GetProductNameFromHomePage(1);
+            _productNameFromHomePage = _homePage.GetProductNameFromHomePage(1);
 
-            _productPriceFromHomePage = homePage.GetProductPriceFromHomePage(1);
+            _productPriceFromHomePage = _homePage.GetProductPriceFromHomePage(1);
 
-            homePage.ClickOnFirstProduct();
+            _homePage.ClickOnFirstProduct();
         }
 
         [Then(@"display product's price")]
         public void ThenDisplayProductSPrice()
         {
-            var productPrice = homePage.GetProductPrice();
+            var productPrice = _homePage.GetProductPrice();
 
             Console.WriteLine(productPrice);
         }
 
-        /******************************** Select first product *****************************/
+        /******************************** 4.Select first product and check cart *****************************/
 
-        [When(@"I click on Add to Cart button")]
-        public void WhenIClickOnAddToCartButton()
+        [Then(@"I add product to cart")]
+        public void ThenIAddProductToCart()
         {
-            homePage.ClickAddToCart();
+            _homePage.ClickAddToCart();
 
-            homePage.ProductAddedToCart();
-        }
-
-        [When(@"I click on Cart button")]
-        public void WhenIClickOnCartButton()
-        {
-            homePage.ClickCart();
+            _homePage.ProductAddedToCart();
         }
 
         [Then(@"The selected product is displayed with the correct price")]
         public void ThenTheSelectedProductIsDisplayedWithTheCorrectPrice()
         {
-            var productNameFromCart = cartPage.GetProductNameFromCartPage(1);
+            var productNameFromCart = _cartPage.GetProductNameFromCartPage(1);
 
-            var productPriceFromCart = cartPage.GetProductPriceFromCartPage(1);
+            var productPriceFromCart = _cartPage.GetProductPriceFromCartPage(1);
 
             Assert.AreEqual(_productNameFromHomePage, productNameFromCart);
 
             Assert.AreEqual(_productPriceFromHomePage, productPriceFromCart);
         }
 
+        /******************************** Check all pages from the header *****************************/
+
+        [When(@"I click on (.*)")]
+        public void WhenIClickOn(string p0)
+        {
+            switch (p0)
+            {
+                case "Home":
+                    _homePage.ClickHome();
+                    break;
+                case "Contact":
+                    _homePage.ClickContact();
+                    break;
+                case "About us":
+                    _homePage.ClickAboutUs();
+                    break;
+                case "Cart":
+                    _homePage.ClickCart();
+                    break;
+                case "Log in":
+                    _homePage.ClickLogIn();
+                    break;
+                case "Sign up":
+                    _homePage.ClickSignUp();
+                    break;
+            }
+        }
+
+        [Then(@"I can see the correct (.*)")]
+        public void ThenICanSeeTheCorrect(string p0)
+        {
+            switch (p0)
+            {
+                case "Home":
+                    _homePage.CheckHomePageIsDisplayed();
+                    break;
+                case "Contact":
+                    _homePage.CheckContactPageIsDisplayed();
+                    break;
+                case "About us":
+                    _homePage.CheckAboutUsPageIsDisplayed();
+                    break;
+                case "Cart":
+                    _cartPage.CheckCartPageIsDisplayed();
+                    break;
+                case "Log in":
+                    _homePage.CheckLogInPageIsDisplayed();
+                    break;
+                case "Sign up":
+                    _homePage.CheckSignUpPageIsDisplayed();
+                    break;
+            }
+        }
+
+        /******************************** Buy a Dell from 2017 *****************************/
+
+        [When(@"I filter by (.*)")]
+        public void WhenIFilterByLaptops(string p0)
+        {
+            switch (p0)
+            {
+                case "Phones":
+                    _homePage.ClickPhoneCategory();
+                    break;
+                case "Laptops":
+                    _homePage.ClickLaptopCategory();
+                    break;
+                case "Monitors":
+                    _homePage.ClickMonitorCategory();
+                    break;
+                default:
+                    Console.WriteLine("Error: No category found!");
+                    break;
+            }
+        }
+
+        [When(@"I search for (.*)")]
+        public void WhenISearchForDell(string p0)
+        {
+            _homePage.SelectProductByName(p0);
+        }
+
+        [When(@"I place the order")]
+        public void WhenIPlaceTheOrder()
+        {
+            _homePage.ClickCart();
+
+            Thread.Sleep(1000);
+
+            _cartPage.ClickPlaceOrder();
+
+            _cartPage.PlaceOrder(OrderName, OrderCountry, OrderCity, OrderCard, OrderMonth, OrderYear);
+        }
+
+        [Then(@"I get the order confirmation")]
+        public void ThenIGetTheOrderConfirmation()
+        {
+            _cartPage.PurchaseConfirmation();
+        }
+
+        /******************************** Buy an Apple monitor *****************************/
+
+        [Then(@"The cart is empty")]
+        public void ThenTheCartIsEmpty()
+        {
+            _homePage.CheckHomePageIsDisplayed();
+
+            _homePage.ClickCart();
+
+            Thread.Sleep(1000);
+
+            Assert.IsTrue(_cartPage.CheckCartIsEmpty());
+        }
+
+        /******************************** Buy products within budget *****************************/
+
+        [Given(@"I have a budget of (.*)\$")]
+        public void GivenIHaveABudgetOf(int p0)
+        {
+            _budget = p0;
+        }
+
+        [Given(@"I select a phone, a laptop and a monitor within budget")]
+        public void GivenISelectAPhoneALaptopAndAMonitorWithinBudget()
+        {
+            _cartPage.AddToCartProductsWithinBudget(_budget);
+        }
+
         [AfterScenario]
         public void ClosePage()
         {
-            driver.Quit();
+            _driver.Quit();
         }
     }
 }

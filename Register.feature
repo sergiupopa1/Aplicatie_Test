@@ -27,7 +27,7 @@ Scenario: Buy random phones using given budget
 
 Scenario: Get mean value product cost
 	Given I am on the homepage
-	When I filter by "<Product>"
+	When I filter by <Product>
 	Then I can see in the test output the mean value of each product
 
 	Examples:
