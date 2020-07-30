@@ -47,7 +47,7 @@ namespace ConsoleApp1.Pages
         {
             var element = _purchaseConfirmationMessage.Displayed;
 
-            var alertText = _driver.FindElement(By.XPath("//h2[contains(text(),'Thank you for your purchase!')]")).Text;
+            var alertText = _driver.FindElement(By.XPath("//h2[contains(text(),'Thank you for your purchase!')]")).Text;//poti defini si acest element sus ca restul
 
             var result = alertText == "Thank you for your purchase!" ? true : false;
 
@@ -114,7 +114,7 @@ namespace ConsoleApp1.Pages
 
             try
             {
-                _wait.Until(ExpectedConditions.ElementIsVisible(By.ClassName("success")));
+                _wait.Until(ExpectedConditions.ElementIsVisible(By.ClassName("success")));//si acestea cred ca le poti declara sus in clasa si apoi doar le folosesti aici ca variabile
 
                 counter = (_driver.FindElements(By.ClassName("success"))).Count;
             }
@@ -159,7 +159,8 @@ namespace ConsoleApp1.Pages
 
             return result;        
         }
-        public void AddToCartProductsWithinBudget(int budget)
+        public void AddToCartProductsWithinBudget(int budget)//incearca sa sparti metoda asta in mai multe ca e greu de urmarit si in caz de schimbari pe UI
+        //o sa fie greu si la mentenanta
         {
             _homePage = new HomePage(_driver);
 
@@ -176,7 +177,7 @@ namespace ConsoleApp1.Pages
 
             for (var i = 1; i <= counter; i++)
             {
-                phoneNameList[i-1] = _driver.FindElement(By.XPath("//div[@id='tbodyid']//div[" + i + "]//div[1]//div[1]//h4[1]//a[1]")).Text;
+                phoneNameList[i-1] = _driver.FindElement(By.XPath("//div[@id='tbodyid']//div[" + i + "]//div[1]//div[1]//h4[1]//a[1]")).Text;//la fel si acestea
                 phonePriceList[i - 1] = int.Parse(Regex.Match((_driver.FindElement(By.XPath("//*[@id=\"tbodyid\"]/div[" + i + "]/div/div/h5"))).Text, @"\d+").Value);
             }
 
@@ -214,7 +215,7 @@ namespace ConsoleApp1.Pages
             var laptopNameToAddToCart = "";
             var monitorNameToAddToCart = "";
             
-            for (var i = 0; i < phoneNameList.Length; i++)
+            for (var i = 0; i < phoneNameList.Length; i++)//acest for ar trebui refactorizat ca sa arate mai bine si sa fie mai usor de urmarit :)
             {
                 var random = rand.Next(phoneNameList.Length);
 
@@ -237,8 +238,11 @@ namespace ConsoleApp1.Pages
                     break;
             }
 
+
+            //pentru metodele din homepage pe care vrei sa le folosesti si in alte page-uri, foloseste-te de mostenire a claselor (cartpage sa mosteneasca homepage)
+            //si o sa fie mai usor sa le apelezi apoi aici
             _homePage.ClickPhoneCategory();
-            Thread.Sleep(1000);
+            Thread.Sleep(1000);//sleep-urile, incearca sa scapi de ele :)
             _homePage.WaitForProducts();
             _homePage.WaitForElementContainText(phoneNameToAddToCart);
             _homePage.SelectProductByName(phoneNameToAddToCart);
