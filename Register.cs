@@ -16,8 +16,8 @@ using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 namespace ConsoleApp1
 {
-    [Binding, Scope(Feature = "Register")]
-    public class Register
+    [Binding, Scope(Feature = "Register")] //structureaza si fisierele features si steps pe foldere
+    public class Register//numeste si clasa asta RegisterSteps ca sa se stie pt ce e :D
     {
         private readonly HomePage _homePage;
 
@@ -180,6 +180,7 @@ namespace ConsoleApp1
             Console.WriteLine(_homePage.GetTheMeanValueOfProduct()); // am adaugat Debug.WriteLine, dar nu apare in output
                                                                     // cu variante Console.WriteLine imi apare valoarea in "Open additional output for this result"
                                                                     // unde gresesc?
+                                                                    //apare acum si cu Debug.
         }
 
         /***************************************** next scenario ****************************************/

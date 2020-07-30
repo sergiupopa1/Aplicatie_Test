@@ -30,7 +30,7 @@ namespace ConsoleApp1.Pages
 
             _cartPage = new CartPage(_driver);
         }
-
+        //declararea elementelor arata bine :)
         private IWebElement _contactPageIdentification => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("recipient-email")));
         private IWebElement _aboutUsPageIdentification => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("videoModalLabel")));
         private IWebElement _category => _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("cat")));
@@ -59,9 +59,12 @@ namespace ConsoleApp1.Pages
 
         public void CheckContactPageIsDisplayed()
         {
-            Assert.IsTrue(_contactPageIdentification.Displayed);
+            Assert.IsTrue(_contactPageIdentification.Displayed);//asserturile se folosesc in Steps nu in pages
+            // aici poti face metoda de tip bool si sa returneze _contactPageIdentification.Displayed
+            // apoi o folosesti in steps si faci acolo asertul
+
         }
-        public void CheckAboutUsPageIsDisplayed()
+        public void CheckAboutUsPageIsDisplayed()//la fel la toate unde ai assert
         {
             Assert.AreEqual(_aboutUsPageIdentification.Text, "About us");
         }
@@ -132,7 +135,7 @@ namespace ConsoleApp1.Pages
         {
             _phoneCategory.Click();
         }
-        public void ClickLaptopCategory()
+        public void ClickLaptopCategory()//aceste metode sunt ok, super
         {
             _laptopCategory.Click();
         }

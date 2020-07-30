@@ -58,7 +58,7 @@ namespace ConsoleApp1
         {
             _homePage.NavigateToUrl(Url);
 
-            _homePage.CheckHomePageIsDisplayed();
+            _homePage.CheckHomePageIsDisplayed();//nu ai nevoie aici de verificarea asta
         }
 
         [When(@"I click Home button")]
@@ -70,7 +70,7 @@ namespace ConsoleApp1
         [Then(@"the home page is displayed")]
         public void ThenTheHomePageIsDisplayed()
         {
-            _homePage.CheckHomePageIsDisplayed();
+            _homePage.CheckHomePageIsDisplayed();//aici ar trebui facuta verificarea/assert-ul
         }
 
         /******************************** Go to Cart Page *****************************/
